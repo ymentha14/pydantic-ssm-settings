@@ -1,11 +1,13 @@
 import logging
-from typing import Tuple
+from pathlib import Path
+from typing import Tuple, Type
 
-from pydantic.env_settings import (
+from pydantic_settings import (
+    BaseSettings,
     EnvSettingsSource,
     InitSettingsSource,
+    PydanticBaseSettingsSource,
     SecretsSettingsSource,
-    SettingsSourceCallable,
 )
 
 from .source import AwsSsmSettingsSource
@@ -13,17 +15,19 @@ from .source import AwsSsmSettingsSource
 logger = logging.getLogger(__name__)
 
 
-class AwsSsmSourceConfig:
+class AwsSsmSourceConfig(BaseSettings):
     @classmethod
-    def customise_sources(
+    def settings_customise_sources(
         cls,
+        settings_cls: Type[BaseSettings],
         init_settings: InitSettingsSource,
         env_settings: EnvSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
         file_secret_settings: SecretsSettingsSource,
-    ) -> Tuple[SettingsSourceCallable, ...]:
-
+    ) -> Tuple[PydanticBaseSettingsSource, ...]:
         ssm_settings = AwsSsmSettingsSource(
-            ssm_prefix=file_secret_settings.secrets_dir,
+            settings_cls=settings_cls,
+            ssm_prefix=Path(file_secret_settings.secrets_dir),
             env_nested_delimiter=env_settings.env_nested_delimiter,
         )
 
