@@ -1,6 +1,7 @@
 import logging
 
 import pytest
+from pydantic import BaseModel
 
 from pydantic_ssm_settings.settings import AwsSsmSourceConfig
 
@@ -13,9 +14,13 @@ class SimpleSettings(AwsSsmSourceConfig):
 
 
 class IntSettings(AwsSsmSourceConfig):
-
     foo: str
     bar: int
+
+class ChildSetting(BaseModel):
+    bar : str
+class ParentSetting(AwsSsmSourceConfig):
+    foo :ChildSetting 
 
 
 def test_secrets_dir_must_be_absolute():
@@ -39,3 +44,9 @@ def test_casting(ssm):
     ssm.put_parameter(Name="/asdf/bar", Value="99")
     settings = IntSettings(_secrets_dir="/asdf")
     assert settings.bar == 99
+
+def test_parameter_override(ssm):
+    ssm.put_parameter(Name="/asdf/foo", Value= '{"bar": "xyz123"}')
+    ssm.put_parameter(Name="/asdf/foo/bar", Value= "overwritten")
+    settings = ParentSetting(_secrets_dir="/asdf")
+    assert settings.foo.bar == "overwritten"
