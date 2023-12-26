@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from typing import Tuple, Type
 
 from pydantic_settings import (
@@ -27,13 +26,13 @@ class AwsSsmSourceConfig(BaseSettings):
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         ssm_settings = AwsSsmSettingsSource(
             settings_cls=settings_cls,
-            ssm_prefix=Path(file_secret_settings.secrets_dir),
-            env_nested_delimiter=env_settings.env_nested_delimiter,
+            ssm_prefix=file_secret_settings.secrets_dir,
         )
 
         return (
             init_settings,
             env_settings,
+            dotenv_settings,
             # Usurping the `secrets_dir` arg. We can't expect any other args to
             # be passed to # the Settings module because Pydantic will complain
             # about unexpected arguments. `secrets_dir` comes from `_secrets_dir`,
