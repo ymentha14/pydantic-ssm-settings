@@ -23,30 +23,30 @@ class ParentSetting(AwsSsmSourceConfig):
     foo :ChildSetting 
 
 
-def test_secrets_dir_must_be_absolute():
+def test_ssm_prefix_must_be_absolute():
     with pytest.raises(ValueError):
-        SimpleSettings(_secrets_dir="asdf")
+        SimpleSettings(ssm_prefix="asdf")
 
 
 def test_lookup_from_ssm(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value="xyz123")
-    settings = SimpleSettings(_secrets_dir="/asdf")
+    settings = SimpleSettings(ssm_prefix="/asdf")
     assert settings.foo == "xyz123"
 
 
 def test_prefer_provided(ssm):
-    settings = SimpleSettings(_secrets_dir="/asdf", foo="manually set")
+    settings = SimpleSettings(ssm_prefix="/asdf", foo="manually set")
     assert settings.foo == "manually set"
 
 
 def test_casting(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value="xyz123")
     ssm.put_parameter(Name="/asdf/bar", Value="99")
-    settings = IntSettings(_secrets_dir="/asdf")
+    settings = IntSettings(ssm_prefix="/asdf")
     assert settings.bar == 99
 
 def test_parameter_override(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value= '{"bar": "xyz123"}')
     ssm.put_parameter(Name="/asdf/foo/bar", Value= "overwritten")
-    settings = ParentSetting(_secrets_dir="/asdf")
+    settings = ParentSetting(ssm_prefix="/asdf")
     assert settings.foo.bar == "overwritten"

@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple, Type
+from typing import Any, Tuple, Type
 
 from pydantic_settings import (
     BaseSettings,
@@ -14,10 +14,15 @@ from .source import AwsSsmSettingsSource
 logger = logging.getLogger(__name__)
 
 
-class AwsSsmSourceConfig(BaseSettings):
-    @classmethod
+
+class BaseSettingsV2(BaseSettings):
+    def __init__(self, *args, ssm_prefix: str, **kwargs: Any) -> None:
+        self.__dict__["__ssm_prefix"] = ssm_prefix
+        super().__init__(self, *args, **kwargs)
+
+class AwsSsmSourceConfig(BaseSettingsV2):
     def settings_customise_sources(
-        cls,
+        self,
         settings_cls: Type[BaseSettings],
         init_settings: InitSettingsSource,
         env_settings: EnvSettingsSource,
@@ -26,7 +31,7 @@ class AwsSsmSourceConfig(BaseSettings):
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         ssm_settings = AwsSsmSettingsSource(
             settings_cls=settings_cls,
-            ssm_prefix=file_secret_settings.secrets_dir,
+            ssm_prefix=self.__dict__["__ssm_prefix"] ,
         )
 
         return (
@@ -39,4 +44,5 @@ class AwsSsmSourceConfig(BaseSettings):
             # one of the few special kwargs that Pydantic will allow:
             # https://github.com/samuelcolvin/pydantic/blob/45db4ad3aa558879824a91dd3b011d0449eb2977/pydantic/env_settings.py#L33
             ssm_settings,
+            file_secret_settings
         )
