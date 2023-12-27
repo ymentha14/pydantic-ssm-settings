@@ -28,15 +28,14 @@ class SettingsError(ValueError):
 
 
 class AwsSsmSettingsSource(EnvSettingsSource):
-    # __slots__ = ("ssm_prefix", "env_nested_delimiter")
-
     def __init__(
         self,
         settings_cls: type[BaseSettings],
         case_sensitive: bool = None,
         ssm_prefix : str = None
     ):
-        super().__init__(settings_cls, case_sensitive, env_prefix=ssm_prefix, env_nested_delimiter="/")
+        super().__init__(settings_cls, case_sensitive=case_sensitive, env_prefix=ssm_prefix, env_nested_delimiter="/")
+        self.env_prefix = ssm_prefix if ssm_prefix is not None else self.config.get('env_prefix', '')
 
     @property
     def client(self) -> "SSMClient":
