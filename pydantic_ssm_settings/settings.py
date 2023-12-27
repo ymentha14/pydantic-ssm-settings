@@ -15,11 +15,8 @@ from .source import AwsSsmSettingsSource
 logger = logging.getLogger(__name__)
 
 
-class SsmSettingsConfigDict:
-    def __new__(self, *args, ssm_prefix: str = None, **kwargs):
-        config_dict = SettingsConfigDict(*args, **kwargs)
-        config_dict["ssm_prefix"] = ssm_prefix
-        return config_dict
+class SsmSettingsConfigDict(SettingsConfigDict):
+    ssm_prefix : str
 
 class BaseSettingsV2(BaseSettings):
     def __init__(self, *args, _ssm_prefix: str = None, **kwargs: Any) -> None:
