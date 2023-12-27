@@ -75,6 +75,13 @@ def test_env_override(env, ssm):
     s = SimpleSettings()
     assert s.foo == "env_bar"
 
+def test_secret_override(tmp_path, ssm):
+    p = tmp_path / "foo"
+    p.write_text("secret_bar")
+    ssm.put_parameter(Name="/foo", Value="ssm_bar")
+    s = SimpleSettings(_secrets_dir=tmp_path)
+    assert s.foo == "secret_bar"
+
 
 def test_nested_parameters(ssm):
     ssm.put_parameter(Name="/foo/bar", Value="bar_value")
@@ -106,17 +113,19 @@ def test_case_insensitivity(ssm):
     assert settings.foo == "bar"
 
 
-
 class CustomConfigDict(AwsSsmSourceConfig):
     model_config = SsmSettingsConfigDict(ssm_prefix="/asdf")
     foo: str
+
 
 def test_parameters_from_model_config(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value="bar")
     settings = CustomConfigDict()
     assert settings.foo == "bar"
 
-class CustomConfigDict(AwsSsmSourceConfig):
-    model_config = SsmSettingsConfigDict(ssm_prefix="/asdf",env_prefix="my_prefix")
-    foo: str
 
+# class CustomConfigDict(AwsSsmSourceConfig):
+#     model_config = SsmSettingsConfigDict(ssm_prefix="/asdf", env_prefix="my_prefix")
+#     foo: str
+
+# def test_

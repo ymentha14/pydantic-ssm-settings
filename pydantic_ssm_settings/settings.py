@@ -45,6 +45,6 @@ class AwsSsmSourceConfig(BaseSettingsV2):
             init_settings,
             env_settings,
             dotenv_settings,
-            ssm_settings,
             file_secret_settings,
+            ssm_settings,
         )
