@@ -20,6 +20,9 @@ class SsmSettingsConfigDict(SettingsConfigDict):
 
 class BaseSettingsV2(BaseSettings):
     def __init__(self, *args, _ssm_prefix: str = None, **kwargs: Any) -> None:
+        """
+        Need a direct access to the attributes dictionary to avoid a pydantic exception
+        """
         self.__dict__["__ssm_prefix"] = _ssm_prefix
         super().__init__(self, *args, **kwargs)
 

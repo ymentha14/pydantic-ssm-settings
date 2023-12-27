@@ -32,11 +32,22 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         self,
         settings_cls: type[BaseSettings],
         case_sensitive: bool = None,
-        ssm_prefix : str = None
+        ssm_prefix: str = None,
     ):
-        ssm_prefix_ = ssm_prefix if ssm_prefix is not None else settings_cls.model_config.get('ssm_prefix', '/')
-        super().__init__(settings_cls, case_sensitive=case_sensitive, env_prefix=ssm_prefix_, env_nested_delimiter="/")
+        # Ideally would retrieve ssm_prefix from self.config but need the superclass to be initialized for that
+        ssm_prefix_ = (
+            ssm_prefix
+            if ssm_prefix is not None
+            else settings_cls.model_config.get("ssm_prefix", "/")
+        )
+        super().__init__(
+            settings_cls,
+            case_sensitive=case_sensitive,
+            env_prefix=ssm_prefix_,
+            env_nested_delimiter="/", # SSM only accepts / as a delimiter
+        )
         self.ssm_prefix = ssm_prefix_
+        assert self.ssm_prefix == self.env_prefix
 
     @property
     def client(self) -> "SSMClient":
@@ -50,6 +61,9 @@ class AwsSsmSettingsSource(EnvSettingsSource):
     def _load_env_vars(
         self,
     ):
+        """
+        Access env_prefix instead of ssm_prefix
+        """
         if not Path(self.env_prefix).is_absolute():
             raise ValueError("SSM prefix must be absolute path")
 
