@@ -21,7 +21,7 @@ class SsmSettingsConfigDict(SettingsConfigDict):
 class BaseSettingsSsmWrapper(BaseSettings):
     """
     Wrapper to store the _ssm_prefix parameter as an instanc attribute.
-    Need a direct access to the attributes dictionary to avoid raising a pydantic exception
+    Need a direct access to the attributes dictionary to avoid raising an AttributeError: __pydantic_private__ exception
     """
     def __init__(self, *args, _ssm_prefix: str = None, **kwargs: Any) -> None:
         """
