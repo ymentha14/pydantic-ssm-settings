@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseSettingsV2(BaseSettings):
-    def __init__(self, *args, ssm_prefix: str, **kwargs: Any) -> None:
+    def __init__(self, *args, ssm_prefix: str = "/", **kwargs: Any) -> None:
         self.__dict__["__ssm_prefix"] = ssm_prefix
         super().__init__(self, *args, **kwargs)
 
