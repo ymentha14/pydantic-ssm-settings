@@ -6,7 +6,7 @@ from pydantic import (
 )
 from pydantic_settings import SettingsConfigDict
 
-from pydantic_ssm_settings.settings import AwsSsmSourceConfig
+from pydantic_ssm_settings.settings import AwsSsmSourceConfig, SsmSettingsConfigDict
 
 logger = logging.getLogger("pydantic_ssm_settings")
 logger.setLevel(logging.DEBUG)
@@ -31,7 +31,7 @@ class ParentSetting(AwsSsmSourceConfig):
 
 def test_ssm_prefix_must_be_absolute():
     with pytest.raises(ValueError):
-        SimpleSettings(ssm_prefix="asdf")
+        SimpleSettings(_ssm_prefix="asdf")
 
 
 def test_lookup_from_ssm(ssm):
@@ -42,7 +42,7 @@ def test_lookup_from_ssm(ssm):
 
 def test_lookup_from_ssm_with_prefix(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value="bar")
-    settings = SimpleSettings(ssm_prefix="/asdf")
+    settings = SimpleSettings(_ssm_prefix="/asdf")
     assert settings.foo == "bar"
 
 
@@ -104,3 +104,19 @@ def test_case_insensitivity(ssm):
     ssm.put_parameter(Name="/FOO", Value="bar")
     settings = CaseInsensitiveSettings()
     assert settings.foo == "bar"
+
+
+
+class CustomConfigDict(AwsSsmSourceConfig):
+    model_config = SsmSettingsConfigDict(ssm_prefix="/asdf")
+    foo: str
+
+def test_parameters_from_model_config(ssm):
+    ssm.put_parameter(Name="/asdf/foo", Value="bar")
+    settings = CustomConfigDict()
+    assert settings.foo == "bar"
+
+class CustomConfigDict(AwsSsmSourceConfig):
+    model_config = SsmSettingsConfigDict(ssm_prefix="/asdf",env_prefix="my_prefix")
+    foo: str
+

@@ -34,8 +34,9 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         case_sensitive: bool = None,
         ssm_prefix : str = None
     ):
-        super().__init__(settings_cls, case_sensitive=case_sensitive, env_prefix=ssm_prefix, env_nested_delimiter="/")
-        self.env_prefix = ssm_prefix if ssm_prefix is not None else self.config.get('env_prefix', '')
+        ssm_prefix_ = ssm_prefix if ssm_prefix is not None else settings_cls.model_config.get('ssm_prefix', '/')
+        super().__init__(settings_cls, case_sensitive=case_sensitive, env_prefix=ssm_prefix_, env_nested_delimiter="/")
+        self.ssm_prefix = ssm_prefix_
 
     @property
     def client(self) -> "SSMClient":
