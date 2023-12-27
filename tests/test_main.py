@@ -122,10 +122,3 @@ def test_parameters_from_model_config(ssm):
     ssm.put_parameter(Name="/asdf/foo", Value="bar")
     settings = CustomConfigDict()
     assert settings.foo == "bar"
-
-
-# class CustomConfigDict(AwsSsmSourceConfig):
-#     model_config = SsmSettingsConfigDict(ssm_prefix="/asdf", env_prefix="my_prefix")
-#     foo: str
-
-# def test_
