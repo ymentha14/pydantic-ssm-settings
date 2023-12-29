@@ -6,7 +6,10 @@ from pydantic import (
 )
 from pydantic_settings import SettingsConfigDict
 
-from pydantic_ssm_settings.settings import AwsSsmSourceConfig, SsmSettingsConfigDict
+from pydantic_ssm_settings import (
+    AwsSsmSourceConfig,
+    SsmSettingsConfigDict,
+)
 
 logger = logging.getLogger("pydantic_ssm_settings")
 logger.setLevel(logging.DEBUG)
@@ -74,6 +77,7 @@ def test_env_override(env, ssm):
     env.set("foo", "env_bar")
     s = SimpleSettings()
     assert s.foo == "env_bar"
+
 
 def test_secret_override(tmp_path, ssm):
     p = tmp_path / "foo"

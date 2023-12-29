@@ -34,7 +34,8 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         case_sensitive: bool = None,
         ssm_prefix: str = None,
     ):
-        # Ideally would retrieve ssm_prefix from self.config but need the superclass to be initialized for that
+        # Ideally would retrieve ssm_prefix from self.config 
+        # but need the superclass to be initialized for that
         ssm_prefix_ = (
             ssm_prefix
             if ssm_prefix is not None
@@ -44,7 +45,7 @@ class AwsSsmSettingsSource(EnvSettingsSource):
             settings_cls,
             case_sensitive=case_sensitive,
             env_prefix=ssm_prefix_,
-            env_nested_delimiter="/", # SSM only accepts / as a delimiter
+            env_nested_delimiter="/",  # SSM only accepts / as a delimiter
         )
         self.ssm_prefix = ssm_prefix_
         assert self.ssm_prefix == self.env_prefix
@@ -93,13 +94,14 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         return output
 
     def __repr__(self) -> str:
-        return f"AwsSsmSettingsSource(ssm_prefix={self.enf_prefix!r})"
+        return f"AwsSsmSettingsSource(ssm_prefix={self.env_prefix!r})"
 
     def get_field_value(
         self, field: FieldInfo, field_name: str
     ) -> tuple[Any, str, bool]:
         """
-        Gets the value for field from environment variables and a flag to determine whether value is complex.
+        Gets the value for field from environment variables and a flag to 
+        determine whether value is complex.
 
         Args:
             field: The field.
