@@ -34,7 +34,7 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         case_sensitive: bool = None,
         ssm_prefix: str = None,
     ):
-        # Ideally would retrieve ssm_prefix from self.config 
+        # Ideally would retrieve ssm_prefix from self.config
         # but need the superclass to be initialized for that
         ssm_prefix_ = (
             ssm_prefix
@@ -100,7 +100,7 @@ class AwsSsmSettingsSource(EnvSettingsSource):
         self, field: FieldInfo, field_name: str
     ) -> tuple[Any, str, bool]:
         """
-        Gets the value for field from environment variables and a flag to 
+        Gets the value for field from environment variables and a flag to
         determine whether value is complex.
 
         Args:
@@ -134,7 +134,7 @@ class AwsSsmSettingsSource(EnvSettingsSource):
                 )
             except Exception as e:
                 raise SettingsError(
-                    f'error getting value for field "{field_name}" from source "{self.__class__.__name__}"'
+                    f'error getting value for field "{field_name}" from source "{self.__class__.__name__}"'  # noqa
                 ) from e
 
             try:
@@ -143,7 +143,7 @@ class AwsSsmSettingsSource(EnvSettingsSource):
                 )
             except ValueError as e:
                 raise SettingsError(
-                    f'error parsing value for field "{field_name}" from source "{self.__class__.__name__}"'
+                    f'error parsing value for field "{field_name}" from source "{self.__class__.__name__}"' # noqa
                 ) from e
 
             if field_value is not None:
